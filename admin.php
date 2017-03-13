@@ -3,7 +3,7 @@
 <?php 
     require("session.php");
     include('menu.php'); 
-?>
+?> 
 
 <?php
     if(isset($flag)){
