@@ -7,7 +7,7 @@
 
 <?php
     if(isset($flag)){
-                    // codes starts here with a checking...
+        // codes starts here with a checking...
         if ($flag=="true") {
             if($role == 'admin'){
               
