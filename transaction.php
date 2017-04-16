@@ -43,7 +43,11 @@
                                   $selected_bus_id = $_POST['selected_bus_id'];
                                   $selected_bus_name = $_POST['selected_bus_name'];
                                   $datetime_travel = $_POST['datetime_travel'];
-                                  $reservation_id = $seat_number.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4).$selected_bus_id;
+                                  if($selected_bus_id < 10) {
+                                    $reservation_id = $seat_number.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4).'0'.$selected_bus_id;
+                                  }else {
+                                    $reservation_id = $seat_number.substr(str_shuffle(str_repeat($x='0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ', ceil(4/strlen($x)) )),1,4).$selected_bus_id;
+                                  }
 
                                   $sql_reserve_ticket = "INSERT INTO reserved (seat_number, email, selected_bus_id, selected_bus_name, datetime_travel, reservation_id) VALUES ('$seat_number', '$email', '$selected_bus_id', '$selected_bus_name', '$datetime_travel', '$reservation_id')";
 
@@ -85,7 +89,12 @@
 
                   $reservation_id_confirm = $_POST['reservation_id'];
                   $seat_number = substr($reservation_id_confirm, 0, 2).',';
-                  $bus_id = substr($reservation_id_confirm, -1);
+                  $raw_bus_id = substr($reservation_id_confirm, -2);
+                  if($raw_bus_id < 10) {
+                    $bus_id = substr($reservation_id_confirm, -1);
+                  } else {
+                    $bus_id = substr($reservation_id_confirm, -2);
+                  }
                     
                   $sql_confirm_ticket = "UPDATE reserved SET ticket_print = 1 WHERE reservation_id = '$reservation_id_confirm'";
 
@@ -95,7 +104,7 @@
                       // ticket deallocation
                       $sql_ticket_deallocation = "UPDATE tickets SET seatEntry=REPLACE(seatEntry, '$seat_number', '') WHERE id = '$bus_id'";
                       if (mysqli_query($conn, $sql_ticket_deallocation)) {
-                          echo "Deallocation updated successfully";
+                          //echo "Deallocation updated successfully";
                       } else {
                           echo "Error updating record: " . mysqli_error($conn);
                       }
@@ -107,6 +116,7 @@
                       if (mysqli_num_rows($result) > 0) {
                           while($row = mysqli_fetch_assoc($result)) { 
                           ?>
+                  
               <div class="panel panel-default print_it" id="forPrintPurpose">
                 <div class="panel-body">
                   <button class="btn btn-primary btn-xs" id="printButton" style="float: right;">Print Ticket</button><br/><br/>
